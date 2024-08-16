@@ -5,11 +5,24 @@ import logging
 
 
 class ParcelDataAggregator:
-    def __init__(self, config_path: Path):
+    def __init__(
+        self,
+        config_path: Path,
+    ):
         self.data_loader = ParcelDataLoader(config_path)
 
-    def aggregate_for_county(self, county_name: str):
-        processor = ParcelProcessor(self.data_loader, county_name)
+    def aggregate_for_county(
+        self,
+        county_name: str,
+        where_clause: str = "1=1",
+        num_records: int = 50,
+    ):
+        processor = ParcelProcessor(
+            self.data_loader,
+            county_name,
+            where_clause,
+            num_records,
+        )
         results = processor.process()
 
         if not results:

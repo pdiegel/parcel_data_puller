@@ -7,33 +7,31 @@ class ParcelQuery:
     def __init__(self, url: str, field_map: Dict[str, str]):
         self.url = url
         self.field_map = field_map
-        self.result_record_count = 50
 
-    def query(self) -> List[None] | List[Dict[str, str]]:
+    def query(
+        self,
+        where_clause: str = "1=1",
+        num_records: int = 50,
+    ) -> List[None] | List[Dict[str, str]]:
         params = {
-            "where": "1=1",
+            "where": self.format_where_clause(where_clause),
             "outFields": ",".join(self.field_map.values()),
             "f": "geojson",
-            "resultRecordCount": self.result_record_count,
-            "resultOffset": 0,
+            "resultRecordCount": num_records,
         }
         all_results: List[None] | List[Dict[str, str]] = []
 
+        logging.debug(f"Querying {self.url} with params: {params}")
         response = requests.get(self.url, params=params)
+
         if response.status_code == 200:
             data = response.json()
             features = data.get("features", [])
             logging.debug(f"Received {len(features)} features")
-            logging.debug(features[0])
-            logging.debug(f"features are of type {type(features[0])}")
 
             for feature in features:
                 all_results.append(self.process_feature(feature))
 
-            if len(features) < self.result_record_count:
-                return all_results
-
-            params["resultOffset"] += self.result_record_count  # type: ignore
         else:
             print(f"Error: {response.status_code}, {response.text}")
             return []
@@ -47,3 +45,18 @@ class ParcelQuery:
             standardized_name: feature["properties"][original_name]
             for standardized_name, original_name in self.field_map.items()
         }
+
+    def format_where_clause(self, where_clause: str) -> str:
+        tokenized_where_clause = where_clause.split("=")
+        standardized_field = tokenized_where_clause[0]
+        standardized_fields = self.field_map.keys()
+
+        if standardized_field not in standardized_fields:
+            logging.error(
+                f"Field {standardized_field} not found in field map: \
+{standardized_fields}"
+            )
+            return where_clause
+
+        layer_specific_field = self.field_map[standardized_field]
+        return f"{layer_specific_field}={tokenized_where_clause[1]}"

@@ -10,4 +10,6 @@ if __name__ == "__main__":
         filename="logs/parcel_data_puller.log",
     )
     aggregator = ParcelDataAggregator(YAML_CONFIG_PATH)
-    aggregator.aggregate_for_county("Wake")
+    aggregator.aggregate_for_county(
+        "Wake", where_clause="PARCEL_ID=0007561", num_records=5
+    )

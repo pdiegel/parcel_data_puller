@@ -6,9 +6,17 @@ from typing import List, Dict
 
 class ParcelProcessor:
 
-    def __init__(self, data_loader: ParcelDataLoader, county_name: str):
+    def __init__(
+        self,
+        data_loader: ParcelDataLoader,
+        county_name: str,
+        where_clause: str = "1=1",
+        num_records: int = 50,
+    ):
         self.data_loader = data_loader
         self.county_name = county_name
+        self.where_clause = where_clause
+        self.num_records = num_records
 
     def process(self) -> List[None] | List[Dict[str, str]]:
         url = self.data_loader.get_county_url(self.county_name)
@@ -19,6 +27,6 @@ class ParcelProcessor:
             return []
 
         query = ParcelQuery(url, field_map)
-        results = query.query()
+        results = query.query(self.where_clause, self.num_records)
         logging.info(f"Processed {len(results)} records for {self.county_name}")
         return results

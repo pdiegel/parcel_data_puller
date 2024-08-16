@@ -47,16 +47,9 @@ class ParcelQuery:
         }
 
     def format_where_clause(self, where_clause: str) -> str:
-        tokenized_where_clause = where_clause.split("=")
-        standardized_field = tokenized_where_clause[0]
-        standardized_fields = self.field_map.keys()
+        for standardized_field, layer_specific_field in self.field_map.items():
+            if not standardized_field in where_clause:
+                continue
+            where_clause = where_clause.replace(standardized_field, layer_specific_field)
 
-        if standardized_field not in standardized_fields:
-            logging.error(
-                f"Field {standardized_field} not found in field map: \
-{standardized_fields}"
-            )
-            return where_clause
-
-        layer_specific_field = self.field_map[standardized_field]
-        return f"{layer_specific_field}={tokenized_where_clause[1]}"
+        return where_clause

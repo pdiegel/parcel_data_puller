@@ -1,4 +1,8 @@
+# Experimental data
 /test.py
 
 # virtual environment
 .venv/
+
+# python cache
+__pycache__/

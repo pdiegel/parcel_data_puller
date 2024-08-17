@@ -1,11 +1,21 @@
-county_urls:
-  Wake: "https://services.arcgis.com/v400IkDOw1ad7Yad/arcgis/rest/services/Raleigh_Parcels_Nash_Square/FeatureServer/0/query"
+COUNTY_URLS:
+  WAKE: "https://services.arcgis.com/v400IkDOw1ad7Yad/arcgis/rest/services/Raleigh_Parcels_Nash_Square/FeatureServer/0/query"
 
-county_requires_additional_processing:
-  Wake: false
+COUNTY_REQUIRES_ADDITIONAL_PROCESSING:
+  WAKE: false
 
-field_mappings:
-  Wake:
+COUNTY_URL_MAPPING:
+  WAKE:
+    PROPERTY_APPRAISER:
+      TYPE: "DIRECT"
+      TEMPLATE: "https://services.wake.gov/realestate/Account.asp?id=[PARCEL_ID]"
+    DEED:
+      TYPE: "SCRAPE"
+      TEMPLATE: "https://rodcrpi.wakegov.com/Booksweb/GenExtResults.aspx?BookPage=[DEED_BOOK]-[DEED_PAGE]"
+      LINK_SELECTOR: "table.rgMasterTable tbody tr.rgRow td:nth-child(7) a"
+
+FIELD_MAPPINGS:
+  WAKE:
     LAND_AREA: "CALC_AREA"
     PARCEL_ID: "REID"
     OWNER_NAME: "OWNER"

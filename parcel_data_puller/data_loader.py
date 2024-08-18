@@ -34,7 +34,9 @@ class ParcelDataLoader:
         return county_url
 
     def get_field_mappings(self, county_name: str) -> Dict[str, str]:
-        field_mappings = self.config.get("FIELD_MAPPINGS", {}).get(county_name)
+        field_mappings = self.config.get("COUNTY_FIELD_MAPPING", {}).get(
+            county_name
+        )
         if not field_mappings or not isinstance(field_mappings, dict):
             logging.info(f"Field mappings for {county_name} not found.")
             raise ValueError(f"Field mappings for {county_name} not found.")

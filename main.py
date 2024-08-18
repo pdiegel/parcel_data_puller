@@ -14,7 +14,11 @@ if __name__ == "__main__":
     api_data = aggregator.aggregate_for_county(
         "WAKE", where_clause="PARCEL_ID=0007561", num_records=5
     )
+    print(api_data)
 
     county_url_manager = CountyURLManager(aggregator.data_loader)
     if api_data[0]:
-        wake_url = county_url_manager.get_urls_for_county("WAKE", api_data[0])
+        county_urls = county_url_manager.get_urls_for_county(
+            "WAKE", api_data[0]
+        )
+        print(county_urls)

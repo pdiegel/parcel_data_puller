@@ -10,11 +10,24 @@ COUNTY_URL_MAPPING:
       TYPE: "DIRECT"
       TEMPLATE: "https://services.wake.gov/realestate/Account.asp?id=[PARCEL_ID]"
     DEED:
-      TYPE: "SCRAPE"
-      TEMPLATE: "https://rodcrpi.wakegov.com/Booksweb/GenExtResults.aspx?BookPage=[DEED_BOOK]-[DEED_PAGE]"
-      LINK_SELECTOR: "table.rgMasterTable tbody tr.rgRow td:nth-child(7) a"
+      TYPE: "SELENIUM"
+      TEMPLATE: "https://rodcrpi.wakegov.com/Booksweb/GenExtSearch.aspx"
+      ACTIONS:
+        - WAIT_FOR_ID: "ctl00_ContentPlaceHolder1_RadTextBook"
+        - FIND_BY_ID: "ctl00_ContentPlaceHolder1_RadTextBook"
+        - ENTER_TEXT: "[DEED_BOOK]"
+        - FIND_BY_ID: "ctl00_ContentPlaceHolder1_RadTextPage"
+        - ENTER_TEXT: "[DEED_PAGE]"
+        - FIND_BY_ID: "ContentPlaceHolder1_btnExtSearch"
+        - CLICK:
+        - WAIT_FOR_ID: "ctl00_ContentPlaceHolder1_RadGridResults_ctl00"
+        - FIND_BY_ID: "ctl00_ContentPlaceHolder1_RadGridResults_ctl00_ctl04_gbcPDF"
+        - CLICK:
+        - WAIT_FOR_NEW_WINDOW:
+        - SWITCH_WINDOW:
+        - RETURN: "WINDOW_URL"
 
-FIELD_MAPPINGS:
+COUNTY_FIELD_MAPPING:
   WAKE:
     LAND_AREA: "CALC_AREA"
     PARCEL_ID: "REID"

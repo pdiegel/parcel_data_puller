@@ -56,4 +56,18 @@ class ParcelDataLoader:
             raise ValueError(f"County config for {county_name} not found.")
 
         logging.debug(f"County config for {county_name}: {county_config}")
-        return county_config
+        return county_config  # type: ignore
+
+    def get_county_additional_processing_config(
+        self, county_name: str
+    ) -> Dict[str, Dict[str, str]]:
+        county_config = self.config.get(
+            "COUNTIES_REQUIRING_ADDITIONAL_PROCESSING", {}
+        ).get(county_name)
+        logging.debug(f"County config for {county_name}: {county_config}")
+        if not county_config or not isinstance(county_config, dict):
+            logging.info(f"County config for {county_name} not found.")
+            raise ValueError(f"County config for {county_name} not found.")
+
+        logging.debug(f"County config for {county_name}: {county_config}")
+        return county_config  # type: ignore

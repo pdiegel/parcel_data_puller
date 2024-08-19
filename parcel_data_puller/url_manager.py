@@ -12,7 +12,7 @@ class CountyURLManager:
     CHROME_OPTIONS = Options()
     CHROME_OPTIONS.add_argument("--log-level=3")  # type: ignore
     # Make the window size as small as possible
-    CHROME_OPTIONS.add_argument("--window-size=500,500")  # type: ignore
+    # CHROME_OPTIONS.add_argument("--window-size=500,500")  # type: ignore
 
     def __init__(self, data_loader: ParcelDataLoader):
         self.data_loader = data_loader

@@ -45,7 +45,15 @@ class SeleniumAutomator:
         elif action == "SWITCH_WINDOW":
             self.driver.switch_to.window(self.driver.window_handles[1])
         elif action == "RETURN" and value == "WINDOW_URL":
-            return self.driver.current_url
+            window_url = self.driver.current_url
+            for _ in self.driver.window_handles:
+                if len(self.driver.window_handles) > 1:
+                    self.driver.switch_to.window(self.driver.window_handles[-1])
+                    self.driver.close()
+
+            self.driver.switch_to.window(self.driver.window_handles[0])
+            self.driver.get("about:blank")
+            return window_url
         return element
 
     def process_actions(
@@ -57,7 +65,7 @@ class SeleniumAutomator:
         self.set_parcel_data(parcel_data)
         result = ""
         self.driver.get(template)
-        self.driver.minimize_window()
+        # self.driver.minimize_window()
         for action_dict in actions:
             for action, value in action_dict.items():
                 result = self.execute_action(action, value, result)
@@ -71,6 +79,6 @@ class SeleniumAutomator:
     def format_parcel_value(self, value: str) -> str:
         for key, dict_value in self.parcel_data.items():
             placeholder = f"[{key}]"
-            if placeholder == value:
+            if value and placeholder in value:
                 return value.replace(placeholder, str(dict_value))
         return value

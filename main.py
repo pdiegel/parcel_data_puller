@@ -12,7 +12,7 @@ if __name__ == "__main__":
     )
     aggregator = ParcelDataAggregator(YAML_CONFIG_PATH)
     api_data = aggregator.aggregate_for_county(
-        "WAKE", where_clause="PARCEL_ID=0007561", num_records=5
+        "WAKE", where_clause="PARCEL_ID=0023821", num_records=5
     )
     print(api_data)
 

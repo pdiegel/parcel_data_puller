@@ -1,8 +1,14 @@
 COUNTY_URLS:
   WAKE: "https://services.arcgis.com/v400IkDOw1ad7Yad/arcgis/rest/services/Raleigh_Parcels_Nash_Square/FeatureServer/0/query"
 
-COUNTY_REQUIRES_ADDITIONAL_PROCESSING:
-  WAKE: false
+COUNTIES_REQUIRING_ADDITIONAL_PROCESSING:
+  WAKE:
+    PLAT_BOOK:
+      REGEX: "BM(\\d+)"
+      SOURCE: "LEGAL_DESCRIPTION"
+    PLAT_PAGE:
+      REGEX: "-\\s*(\\d+)"
+      SOURCE: "LEGAL_DESCRIPTION"
 
 COUNTY_URL_MAPPING:
   WAKE:
@@ -18,6 +24,23 @@ COUNTY_URL_MAPPING:
         - ENTER_TEXT: "[DEED_BOOK]"
         - FIND_BY_ID: "ctl00_ContentPlaceHolder1_RadTextPage"
         - ENTER_TEXT: "[DEED_PAGE]"
+        - FIND_BY_ID: "ContentPlaceHolder1_btnExtSearch"
+        - CLICK:
+        - WAIT_FOR_ID: "ctl00_ContentPlaceHolder1_RadGridResults_ctl00"
+        - FIND_BY_ID: "ctl00_ContentPlaceHolder1_RadGridResults_ctl00_ctl04_gbcPDF"
+        - CLICK:
+        - WAIT_FOR_NEW_WINDOW:
+        - SWITCH_WINDOW:
+        - RETURN: "WINDOW_URL"
+    PLAT:
+      TYPE: "SELENIUM"
+      TEMPLATE: "https://rodcrpi.wakegov.com/Booksweb/GenExtSearch.aspx"
+      ACTIONS:
+        - WAIT_FOR_ID: "ctl00_ContentPlaceHolder1_RadTextBook"
+        - FIND_BY_ID: "ctl00_ContentPlaceHolder1_RadTextBook"
+        - ENTER_TEXT: "BM[PLAT_BOOK]"
+        - FIND_BY_ID: "ctl00_ContentPlaceHolder1_RadTextPage"
+        - ENTER_TEXT: "[PLAT_PAGE]"
         - FIND_BY_ID: "ContentPlaceHolder1_btnExtSearch"
         - CLICK:
         - WAIT_FOR_ID: "ctl00_ContentPlaceHolder1_RadGridResults_ctl00"

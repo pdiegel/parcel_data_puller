@@ -16,7 +16,7 @@ COUNTY_URL_MAPPING:
       TYPE: "DIRECT"
       TEMPLATE: "https://services.wake.gov/realestate/Account.asp?id=[PARCEL_ID]"
     DEED:
-      TYPE: "SELENIUM"
+      TYPE: "PLAYWRIGHT"
       TEMPLATE: "https://rodcrpi.wakegov.com/Booksweb/GenExtSearch.aspx"
       ACTIONS:
         - WAIT_FOR_ID: "ctl00_ContentPlaceHolder1_RadTextBook"
@@ -33,7 +33,7 @@ COUNTY_URL_MAPPING:
         - SWITCH_WINDOW:
         - RETURN: "WINDOW_URL"
     PLAT:
-      TYPE: "SELENIUM"
+      TYPE: "PLAYWRIGHT"
       TEMPLATE: "https://rodcrpi.wakegov.com/Booksweb/GenExtSearch.aspx"
       ACTIONS:
         - WAIT_FOR_ID: "ctl00_ContentPlaceHolder1_RadTextBook"

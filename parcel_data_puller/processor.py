@@ -49,9 +49,9 @@ class ParcelProcessor:
         return results
 
     def get_regex_match(self, regex: str, source: str) -> str:
-        print(f"Searching for {regex} in {source}")
+        logging.info(f"Searching for {regex} in {source}")
         match = re.search(regex, source)
         if match:
-            print(f"Found match: {match.group(1)}")
+            logging.info(f"Found match: {match.group(1)}")
             return match.group(1)
         return ""

@@ -33,7 +33,7 @@ class ParcelQuery:
                 all_results.append(self.process_feature(feature))
 
         else:
-            print(f"Error: {response.status_code}, {response.text}")
+            logging.error(f"Error: {response.status_code}, {response.text}")
             return []
 
         return all_results
@@ -50,6 +50,8 @@ class ParcelQuery:
         for standardized_field, layer_specific_field in self.field_map.items():
             if not standardized_field in where_clause:
                 continue
-            where_clause = where_clause.replace(standardized_field, layer_specific_field)
+            where_clause = where_clause.replace(
+                standardized_field, layer_specific_field
+            )
 
         return where_clause

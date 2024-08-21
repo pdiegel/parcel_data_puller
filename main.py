@@ -6,7 +6,7 @@ from pathlib import Path
 if __name__ == "__main__":
     YAML_CONFIG_PATH = Path("config/field_mappings.yaml")
     logging.basicConfig(
-        level=logging.DEBUG,
+        level=logging.INFO,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
         filename="logs/parcel_data_puller.log",
     )

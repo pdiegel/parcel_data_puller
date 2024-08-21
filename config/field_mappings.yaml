@@ -27,7 +27,7 @@ COUNTY_URL_MAPPING:
         - FIND_BY_ID: "ContentPlaceHolder1_btnExtSearch"
         - CLICK:
         - WAIT_FOR_ID: "ctl00_ContentPlaceHolder1_RadGridResults_ctl00"
-        - FIND_BY_ID: "ctl00_ContentPlaceHolder1_RadGridResults_ctl00_ctl04_gbcPDF"
+        - FIND_BY_ID: "ctl00_ContentPlaceHolder1_RadGridResults_ctl00_ctl04_gbcDocument"
         - CLICK:
         - WAIT_FOR_NEW_WINDOW:
         - SWITCH_WINDOW:
@@ -44,7 +44,7 @@ COUNTY_URL_MAPPING:
         - FIND_BY_ID: "ContentPlaceHolder1_btnExtSearch"
         - CLICK:
         - WAIT_FOR_ID: "ctl00_ContentPlaceHolder1_RadGridResults_ctl00"
-        - FIND_BY_ID: "ctl00_ContentPlaceHolder1_RadGridResults_ctl00_ctl04_gbcPDF"
+        - FIND_BY_ID: "ctl00_ContentPlaceHolder1_RadGridResults_ctl00_ctl04_gbcDocument"
         - CLICK:
         - WAIT_FOR_NEW_WINDOW:
         - SWITCH_WINDOW:

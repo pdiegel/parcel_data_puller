@@ -6,11 +6,13 @@ from typing import Dict
 from urllib.parse import urljoin
 from .selenium_automator import SeleniumAutomator
 from selenium.webdriver.chrome.options import Options
+import time
 
 
 class CountyURLManager:
     CHROME_OPTIONS = Options()
     CHROME_OPTIONS.add_argument("--log-level=3")  # type: ignore
+    CHROME_OPTIONS.add_argument("--headless")  # type: ignore
     # Make the window size as small as possible
     # CHROME_OPTIONS.add_argument("--window-size=500,500")  # type: ignore
 
@@ -43,8 +45,13 @@ class CountyURLManager:
                     url_info.get("LINK_SELECTOR"),
                 )
             elif url_type == "SELENIUM":
+                start = time.perf_counter()
                 url = self._scrape_selenuim_url(
                     url_info["TEMPLATE"], url_info.get("ACTIONS"), parcel_data
+                )
+                end = time.perf_counter()
+                logging.info(
+                    f"Time taken for Selenium Task {county_name}: {end-start}"
                 )
 
             else:

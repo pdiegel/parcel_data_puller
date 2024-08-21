@@ -1,4 +1,4 @@
-# Experimental data
+# experimental data
 /test.py
 /test2.py
 
@@ -7,3 +7,6 @@
 
 # python cache
 __pycache__/
+
+# logs
+logs/

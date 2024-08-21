@@ -1,8 +1,13 @@
-# Experimental data
+# experimental data
 /test.py
+/test2.py
 
 # virtual environment
 .venv/
 
 # python cache
 __pycache__/
+
+# logs
+logs/
+../logs/*

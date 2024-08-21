@@ -2,6 +2,7 @@ from .data_loader import ParcelDataLoader
 from .processor import ParcelProcessor
 from pathlib import Path
 import logging
+from typing import Dict, List
 
 
 class ParcelDataAggregator:
@@ -16,7 +17,7 @@ class ParcelDataAggregator:
         county_name: str,
         where_clause: str = "1=1",
         num_records: int = 50,
-    ):
+    ) -> List[None] | List[Dict[str, str]]:
         processor = ParcelProcessor(
             self.data_loader,
             county_name,
@@ -27,8 +28,10 @@ class ParcelDataAggregator:
 
         if not results:
             logging.info(f"No results were returned for {county_name}.")
-            return
+            return []
 
         logging.info(f"Results for {county_name}:")
         for result in results:
             logging.debug(result)
+
+        return results

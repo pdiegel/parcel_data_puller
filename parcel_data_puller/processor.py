@@ -2,6 +2,7 @@ from .query import ParcelQuery
 import logging
 from .data_loader import ParcelDataLoader
 from typing import List, Dict
+import re
 
 
 class ParcelProcessor:
@@ -28,5 +29,29 @@ class ParcelProcessor:
 
         query = ParcelQuery(url, field_map)
         results = query.query(self.where_clause, self.num_records)
+        results = self.process_additional_data(results)  # type: ignore
         logging.info(f"Processed {len(results)} records for {self.county_name}")
         return results
+
+    def process_additional_data(
+        self, results: List[Dict[str, str]]
+    ) -> List[Dict[str, str]]:
+        additional_processing_config = (
+            self.data_loader.get_county_additional_processing_config(
+                self.county_name
+            )
+        )
+        for key, value in additional_processing_config.items():
+            regex = value["REGEX"]
+            for result in results:
+                source = result[value["SOURCE"]]
+                result[key] = self.get_regex_match(regex, source)
+        return results
+
+    def get_regex_match(self, regex: str, source: str) -> str:
+        print(f"Searching for {regex} in {source}")
+        match = re.search(regex, source)
+        if match:
+            print(f"Found match: {match.group(1)}")
+            return match.group(1)
+        return ""

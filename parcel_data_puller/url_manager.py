@@ -4,21 +4,14 @@ import logging
 from .data_loader import ParcelDataLoader
 from typing import Dict
 from urllib.parse import urljoin
-from .selenium_automator import SeleniumAutomator
-from selenium.webdriver.chrome.options import Options
 import time
+import asyncio
+from .playwright_automator import process_actions
 
 
 class CountyURLManager:
-    CHROME_OPTIONS = Options()
-    CHROME_OPTIONS.add_argument("--log-level=3")  # type: ignore
-    CHROME_OPTIONS.add_argument("--headless")  # type: ignore
-    # Make the window size as small as possible
-    # CHROME_OPTIONS.add_argument("--window-size=500,500")  # type: ignore
-
     def __init__(self, data_loader: ParcelDataLoader):
         self.data_loader = data_loader
-        self.selenium_automator = SeleniumAutomator(self.CHROME_OPTIONS)
 
     def get_urls_for_county(
         self, county_name: str, parcel_data: Dict[str, str]
@@ -30,36 +23,45 @@ class CountyURLManager:
             raise ValueError(f"No URL template found for county: {county_name}")
 
         county_urls: Dict[str, str] = dict()
+        playwright_url_data: Dict[str, Dict[str, str]] = {}
 
         for url_name, url_info in county_url_config.items():
-            url_type = url_info.get("TYPE", "DIRECT")
+            url = None
+            url_type = url_info.get("TYPE")
+
             if url_type == "DIRECT":
                 url = self._generate_direct_url(
                     url_info["TEMPLATE"], parcel_data
                 )
-
             elif url_type == "SCRAPE":
                 url = self._scrape_url(
                     url_info["TEMPLATE"],
                     parcel_data,
                     url_info.get("LINK_SELECTOR"),
                 )
-            elif url_type == "SELENIUM":
-                start = time.perf_counter()
-                url = self._scrape_selenuim_url(
-                    url_info["TEMPLATE"], url_info.get("ACTIONS"), parcel_data
-                )
-                end = time.perf_counter()
-                logging.info(
-                    f"Time taken for Selenium Task {county_name}: {end-start}"
-                )
-
+            elif url_type == "PLAYWRIGHT":
+                playwright_url_data[url_name] = url_info
             else:
                 raise ValueError(
                     f"Unknown URL type '{url_type}' for county: {county_name}"
                 )
-            county_urls[url_name] = url
 
+            if url:
+                county_urls[url_name] = url
+
+        if playwright_url_data:
+            start = time.perf_counter()
+            playwright_results = asyncio.run(
+                process_actions(playwright_url_data, parcel_data)
+            )
+            end = time.perf_counter()
+            logging.info(
+                f"Time taken for Playwright Task {county_name}: {end - start}"
+            )
+            for url_name, result in zip(
+                playwright_url_data.keys(), playwright_results
+            ):
+                county_urls[url_name] = result
         return county_urls
 
     def _generate_direct_url(self, template: str, data: Dict[str, str]) -> str:
@@ -84,14 +86,4 @@ class CountyURLManager:
         if not link or not link.get("href"):
             raise ValueError(f"Failed to find link on page: {url}")
 
-        return urljoin(url, link["href"])
-
-    def _scrape_selenuim_url(
-        self,
-        template: str,
-        actions: list[Dict[str, str]],
-        parcel_data: Dict[str, str],
-    ) -> str:
-        return self.selenium_automator.process_actions(
-            template, actions, parcel_data
-        )  # type: ignore
+        return urljoin(url, link["href"])  # type: ignore

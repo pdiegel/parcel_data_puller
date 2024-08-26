@@ -2,9 +2,7 @@ import pytest
 from pathlib import Path
 from parcel_data_puller.data_loader import ParcelDataLoader
 from config.constants import YAML_CONFIG_PATH
-
-TEST_COUNTY = "WAKE"
-INVALID_COUNTY = "INVALID"
+from tests.constants import TEST_COUNTY, INVALID_COUNTY
 
 
 @pytest.fixture

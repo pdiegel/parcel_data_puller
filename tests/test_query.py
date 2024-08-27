@@ -5,9 +5,7 @@ from parcel_data_puller.data_loader import ParcelDataLoader
 from config.constants import YAML_CONFIG_PATH
 from tests.constants import (
     TEST_COUNTY,
-    INVALID_COUNTY,
     EMPTY_TEST_COUNTY,
-    TEST_REGEX,
 )
 from typing import Dict
 from unittest.mock import patch, MagicMock

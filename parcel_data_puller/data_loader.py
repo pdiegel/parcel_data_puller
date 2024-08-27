@@ -28,7 +28,7 @@ class ParcelDataLoader:
         county_url = self.config.get("COUNTY_URLS", {}).get(county_name)
         if not county_url or not isinstance(county_url, str):
             logging.info(f"County URL for {county_name} not found.")
-            raise ValueError(f"County URL for {county_name} not found.")
+            return ""
 
         logging.debug(f"County URL for {county_name}: {county_url}")
         return county_url
@@ -39,7 +39,7 @@ class ParcelDataLoader:
         )
         if not field_mappings or not isinstance(field_mappings, dict):
             logging.info(f"Field mappings for {county_name} not found.")
-            raise ValueError(f"Field mappings for {county_name} not found.")
+            return {}
 
         logging.debug(f"Field mappings for {county_name}: {field_mappings}")
         return field_mappings
@@ -53,7 +53,7 @@ class ParcelDataLoader:
         logging.debug(f"County config for {county_name}: {county_config}")
         if not county_config or not isinstance(county_config, dict):
             logging.info(f"County config for {county_name} not found.")
-            raise ValueError(f"County config for {county_name} not found.")
+            return {}
 
         logging.debug(f"County config for {county_name}: {county_config}")
         return county_config  # type: ignore
@@ -67,7 +67,7 @@ class ParcelDataLoader:
         logging.debug(f"County config for {county_name}: {county_config}")
         if not county_config or not isinstance(county_config, dict):
             logging.info(f"County config for {county_name} not found.")
-            raise ValueError(f"County config for {county_name} not found.")
+            return {}
 
         logging.debug(f"County config for {county_name}: {county_config}")
         return county_config  # type: ignore

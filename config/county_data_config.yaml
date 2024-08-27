@@ -1,5 +1,6 @@
 COUNTY_URLS:
   WAKE: "https://services.arcgis.com/v400IkDOw1ad7Yad/arcgis/rest/services/Raleigh_Parcels_Nash_Square/FeatureServer/0/query"
+  TEST: "https://localhost"
 
 COUNTIES_REQUIRING_ADDITIONAL_PROCESSING:
   WAKE:
@@ -85,3 +86,5 @@ COUNTY_FIELD_MAPPING:
     NUM_UNITS: "TOTUNITS"
     OLD_PARCEL_NUMBER: "OLD_PARCEL_NUMBER"
     ZIP_CODE: "ZIPNUM"
+  TEST:
+    PARCEL_ID: "REID"

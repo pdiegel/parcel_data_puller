@@ -23,10 +23,9 @@ def test_aggregate_for_county(data_aggregator: ParcelDataAggregator):
     assert isinstance(data[0], dict)
     assert "PARCEL_ID" in data[0]
 
-    try:
-        data_aggregator.aggregate_for_county(INVALID_COUNTY)
-    except Exception as e:
-        assert f"County URL for {INVALID_COUNTY} not found" in str(e)
+    data = data_aggregator.aggregate_for_county(INVALID_COUNTY)
+    assert isinstance(data, list)
+    assert len(data) == 0
 
     data = data_aggregator.aggregate_for_county(
         TEST_COUNTY, where_clause=f"PARCEL_ID={TEST_PARCEL_ID}", num_records=5

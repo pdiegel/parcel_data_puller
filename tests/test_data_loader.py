@@ -25,10 +25,8 @@ def test_get_county_url(data_loader: ParcelDataLoader):
 Raleigh_Parcels_Nash_Square/FeatureServer/0/query"
     )
 
-    try:
-        url = data_loader.get_county_url(INVALID_COUNTY)
-    except ValueError as e:
-        assert str(e) == f"County URL for {INVALID_COUNTY} not found."
+    url = data_loader.get_county_url(INVALID_COUNTY)
+    assert url == ""
 
 
 def test_get_field_mappings(data_loader: ParcelDataLoader):
@@ -37,10 +35,9 @@ def test_get_field_mappings(data_loader: ParcelDataLoader):
     assert "PARCEL_ID" in field_mappings
     assert "OWNER_NAME" in field_mappings
 
-    try:
-        field_mappings = data_loader.get_field_mappings(INVALID_COUNTY)
-    except ValueError as e:
-        assert str(e) == f"Field mappings for {INVALID_COUNTY} not found."
+    field_mappings = data_loader.get_field_mappings(INVALID_COUNTY)
+    assert isinstance(field_mappings, dict)
+    assert len(field_mappings) == 0
 
 
 def test_get_county_url_config(data_loader: ParcelDataLoader):
@@ -51,10 +48,9 @@ def test_get_county_url_config(data_loader: ParcelDataLoader):
     # key "TEMPLATE" in it
     assert "TEMPLATE" in list(county_config.values())[0]
 
-    try:
-        county_config = data_loader.get_county_url_config(INVALID_COUNTY)
-    except ValueError as e:
-        assert str(e) == f"County config for {INVALID_COUNTY} not found."
+    county_config = data_loader.get_county_url_config(INVALID_COUNTY)
+    assert isinstance(county_config, dict)
+    assert len(county_config) == 0
 
 
 def test_get_county_additional_processing_config(data_loader: ParcelDataLoader):
@@ -68,9 +64,8 @@ def test_get_county_additional_processing_config(data_loader: ParcelDataLoader):
     assert "REGEX" in list(additional_processing_config.values())[0]
     assert "SOURCE" in list(additional_processing_config.values())[0]
 
-    try:
-        additional_processing_config = (
-            data_loader.get_county_additional_processing_config(INVALID_COUNTY)
-        )
-    except ValueError as e:
-        assert str(e) == f"County config for {INVALID_COUNTY} not found."
+    additional_processing_config = (
+        data_loader.get_county_additional_processing_config(INVALID_COUNTY)
+    )
+    assert isinstance(additional_processing_config, dict)
+    assert len(additional_processing_config) == 0

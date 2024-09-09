@@ -46,6 +46,13 @@ async def execute_action(
         if action == "FIND_BY_ID":
             element = page.locator(f"#{value}")
             return element, page
+        elif action == "FIND_INPUT_BY_TEXT":
+            element = page.locator(f"//input[@value='{value}']").first
+        elif action == "FIND_BY_TEXT":
+            element = page.get_by_text(value).first
+        elif action == "FIND_BY_TYPE":
+            # type is a, td, tr, etc.
+            element = page.locator(f"{value}").first
         elif action == "ENTER_TEXT":
             if not isinstance(element, Locator):
                 raise ValueError("ENTER_TEXT action requires an element")

@@ -1,10 +1,9 @@
 from parcel_data_puller.aggregator import ParcelDataAggregator
 from parcel_data_puller.url_manager import CountyURLManager
+from config.constants import YAML_CONFIG_PATH
 import logging
-from pathlib import Path
 
 if __name__ == "__main__":
-    YAML_CONFIG_PATH = Path("config/county_data_config.yaml")
 
     logging.basicConfig(
         level=logging.DEBUG,

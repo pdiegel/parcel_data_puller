@@ -80,6 +80,27 @@ COUNTY_URL_MAPPING:
         - WAIT_FOR_NEW_WINDOW:
         - SWITCH_WINDOW:
         - RETURN: "WINDOW_URL"
+  TEST:
+    TEST_APPRAISER:
+      TYPE: "SCRAPE"
+      TEMPLATE: "https://www.bttaxpayerportal.com/itspublicjo"
+      LINK_SELECTOR: "a"
+    TEST_APPRAISER_INVALID:
+      TYPE: "SCRAPE"
+      TEMPLATE: "https://www.bttaxpayerportal.com/itspublicjo"
+      LINK_SELECTOR: "#testtest"
+    TEST_APPRAISER_INVALID_SELECTOR:
+      TYPE: "SCRAPE"
+      TEMPLATE: "https://www.bttaxpayerportal.com/itspublicjo"
+      LINK_SELECTOR: ""
+    TEST_APPRAISER_INVALID_URL:
+      TYPE: "SCRAPE"
+      TEMPLATE: "https://www.bttaxpayrtal.com/itspublicjo"
+      LINK_SELECTOR: "#testtest"
+    TEST_INVALID_TYPE:
+      TYPE: "INVALID"
+      TEMPLATE: "https://www.bttaxpayerportal.com/itspublicjo"
+      LINK_SELECTOR: ""
 
 COUNTY_FIELD_MAPPING:
   JOHNSTON:

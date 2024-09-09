@@ -15,12 +15,13 @@ class CountyURLManager:
 
     def get_urls_for_county(
         self, county_name: str, parcel_data: Dict[str, str]
-    ) -> Dict[str, str]:
+    ) -> Dict[str, str] | Dict[None, None]:
         county_url_config: Dict[str, Dict[str, str]] = (
             self.data_loader.get_county_url_config(county_name)
         )
         if not county_url_config:
-            raise ValueError(f"No URL template found for county: {county_name}")
+            logging.error(f"No URL template found for county: {county_name}")
+            return {}
 
         county_urls: Dict[str, str] = dict()
         playwright_url_data: Dict[str, Dict[str, str]] = {}
@@ -42,9 +43,10 @@ class CountyURLManager:
             elif url_type == "PLAYWRIGHT":
                 playwright_url_data[url_name] = url_info
             else:
-                raise ValueError(
+                logging.error(
                     f"Unknown URL type '{url_type}' for county: {county_name}"
                 )
+                continue
 
             if url:
                 county_urls[url_name] = url
@@ -75,15 +77,22 @@ class CountyURLManager:
     ) -> str:
         url = self._generate_direct_url(template, data)
         if not link_selector:
-            return url
-        response = requests.get(url)
+            return ""
+        try:
+            response = requests.get(url)
+        except requests.exceptions.ConnectionError as e:
+            logging.error(f"Failed to retrieve page: {url}, {str(e)}")
+            return ""
+
         if response.status_code != 200:
-            raise ValueError(f"Failed to retrieve page: {url}")
+            logging.error(f"Failed to retrieve page: {url}")
+            return ""
 
         soup = BeautifulSoup(response.text, "html.parser")
 
         link = soup.select_one(link_selector)
         if not link or not link.get("href"):
-            raise ValueError(f"Failed to find link on page: {url}")
+            logging.error(f"Failed to find link on page: {url}")
+            return ""
 
         return urljoin(url, link["href"])  # type: ignore

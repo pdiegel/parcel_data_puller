@@ -34,8 +34,11 @@ class ParcelProcessor:
         return results
 
     def process_additional_data(
-        self, results: List[Dict[str, str]]
-    ) -> List[Dict[str, str]]:
+        self, results: List[Dict[str, str]] | List[None]
+    ) -> List[Dict[str, str]] | List[None]:
+        if len(results) == 0:
+            return results
+
         additional_processing_config = (
             self.data_loader.get_county_additional_processing_config(
                 self.county_name
@@ -44,8 +47,11 @@ class ParcelProcessor:
         for key, value in additional_processing_config.items():
             regex = value["REGEX"]
             for result in results:
-                source = result[value["SOURCE"]]
-                result[key] = self.get_regex_match(regex, source)
+                source = result[value["SOURCE"]]  # type: ignore
+                result[key] = self.get_regex_match(  # type: ignore
+                    regex,
+                    source,  # type: ignore
+                )
         return results
 
     def get_regex_match(self, regex: str, source: str) -> str:

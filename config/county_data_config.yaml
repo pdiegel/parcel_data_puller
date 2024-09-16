@@ -1,6 +1,7 @@
 COUNTY_URLS:
   JOHNSTON: "https://services8.arcgis.com/c7zH8GcUwDgKkh1u/arcgis/rest/services/WB_BoundariesandGen_gdb/FeatureServer/2/query"
-  WAKE: "https://services.arcgis.com/v400IkDOw1ad7Yad/arcgis/rest/services/Raleigh_Parcels_Nash_Square/FeatureServer/0/query"
+  WAKE: "https://services1.arcgis.com/nry3yyvaEfskMEXA/arcgis/rest/services/Wake_County_data/FeatureServer/9/query"
+  DURHAM: "https://services2.arcgis.com/G5vR3cOjh6g2Ed8E/arcgis/rest/services/Parcels_NEW/FeatureServer/0/query"
   TEST: "https://localhost"
 
 COUNTIES_REQUIRING_ADDITIONAL_PROCESSING:

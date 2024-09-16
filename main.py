@@ -12,12 +12,12 @@ if __name__ == "__main__":
         filemode="w",
     )
     aggregator = ParcelDataAggregator(YAML_CONFIG_PATH)
-    # api_data = aggregator.aggregate_for_county(
-    #     "WAKE", where_clause="PARCEL_ID=0023821", num_records=5
-    # )
     api_data = aggregator.aggregate_for_county(
-        "JOHNSTON", where_clause="PARCEL_ID='164504-60-3696'", num_records=5
+        "WAKE", where_clause="PARCEL_ID=0064907", num_records=5
     )
+    # api_data = aggregator.aggregate_for_county(
+    #     "JOHNSTON", where_clause="PARCEL_ID='164504-60-3696'", num_records=5
+    # )
     logging.info(api_data)
 
     county_url_manager: CountyURLManager = CountyURLManager(
@@ -25,6 +25,10 @@ if __name__ == "__main__":
     )
     if api_data[0]:
         county_urls = county_url_manager.get_urls_for_county(
-            "JOHNSTON", api_data[0]
+            "WAKE", api_data[0]
         )
         logging.info(county_urls)
+        for url in county_urls:
+            api_data[0][url] = county_urls[url]
+
+    logging.info(api_data)

@@ -21,8 +21,8 @@ def test_get_county_url(data_loader: ParcelDataLoader):
     url = data_loader.get_county_url(TEST_COUNTY)
     assert (
         url
-        == "https://services.arcgis.com/v400IkDOw1ad7Yad/arcgis/rest/services/\
-Raleigh_Parcels_Nash_Square/FeatureServer/0/query"
+        == "https://services1.arcgis.com/nry3yyvaEfskMEXA/arcgis/rest/\
+services/Wake_County_data/FeatureServer/9/query"
     )
 
     url = data_loader.get_county_url(INVALID_COUNTY)

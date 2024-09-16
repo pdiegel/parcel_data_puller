@@ -101,7 +101,7 @@ def test_query(parcel_query: ParcelQuery, parcel_query_empty: ParcelQuery):
     assert isinstance(data[0], dict)
     assert "PARCEL_ID" in data[0]
 
-    data = parcel_query.query(where_clause=f"PARCEL_ID={1234}")
+    data = parcel_query.query(where_clause=f"PARCEL_ID={1234564566985}")
     assert isinstance(data, list)
     assert len(data) == 0
 

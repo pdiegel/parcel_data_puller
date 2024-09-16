@@ -94,7 +94,7 @@ async def process_actions(
     parcel_data: Dict[str, str],
 ):
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=False)
+        browser = await p.chromium.launch(headless=True)
 
         routines = [
             run_automation(

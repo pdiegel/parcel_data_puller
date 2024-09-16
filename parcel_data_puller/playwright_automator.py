@@ -7,6 +7,7 @@ from playwright.async_api import (
 )
 import logging
 from typing import Tuple, Dict, List, Any
+from .helpers.misc_url_funcs import generate_direct_url
 
 
 async def run_automation(
@@ -53,6 +54,8 @@ async def execute_action(
         elif action == "FIND_BY_TYPE":
             # type is a, td, tr, etc.
             element = page.locator(f"{value}").first
+        elif action == "FIND_BY_CLASS":
+            element = page.locator(f".{value}").first
         elif action == "ENTER_TEXT":
             if not isinstance(element, Locator):
                 raise ValueError("ENTER_TEXT action requires an element")
@@ -91,11 +94,11 @@ async def process_actions(
     parcel_data: Dict[str, str],
 ):
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)
+        browser = await p.chromium.launch(headless=False)
 
         routines = [
             run_automation(
-                url["TEMPLATE"],
+                generate_direct_url(url["TEMPLATE"], parcel_data),
                 url["ACTIONS"],
                 parcel_data,
                 await browser.new_context(),

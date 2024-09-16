@@ -22,6 +22,52 @@ COUNTIES_REQUIRING_ADDITIONAL_PROCESSING:
       SOURCE: "LEGAL_DESCRIPTION"
 
 COUNTY_URL_MAPPING:
+  DURHAM:
+    PROPERTY_APPRAISER:
+      TYPE: "DIRECT"
+      TEMPLATE: "https://taxcama.dconc.gov/camapwa/PropertySummary.aspx?PARCELPK=[PARCEL_PK]"
+    GIS:
+      TYPE: "DIRECT"
+      TEMPLATE: "https://maps.durhamnc.gov/?pid=[PARCEL_ID]"
+    DEED:
+      TYPE: "PLAYWRIGHT"
+      TEMPLATE: "https://rodweb.dconc.gov/web/search/DOCSEARCH5S1"
+      ACTIONS:
+        - WAIT_FOR_ID: "submitDisclaimerAccept"
+        - FIND_BY_ID: "submitDisclaimerAccept"
+        - CLICK:
+        - WAIT_FOR_ID: "field_BookPageID_DOT_Volume"
+        - FIND_BY_ID: "field_BookPageID_DOT_Volume"
+        - ENTER_TEXT: "[DEED_BOOK]"
+        - FIND_BY_ID: "field_BookPageID_DOT_Page"
+        - ENTER_TEXT: "[DEED_PAGE]"
+        - FIND_BY_ID: "searchButton"
+        - CLICK:
+        - FIND_BY_CLASS: "selfServiceSearchResultList"
+        - CLICK:
+        - FIND_BY_CLASS: "selfServiceSearchResultNavigation"
+        - CLICK:
+        - RETURN: "WINDOW_URL"
+    PLAT:
+      TYPE: "PLAYWRIGHT"
+      TEMPLATE: "https://rodweb.dconc.gov/web/search/DOCSEARCH5S1"
+      ACTIONS:
+        - WAIT_FOR_ID: "submitDisclaimerAccept"
+        - FIND_BY_ID: "submitDisclaimerAccept"
+        - CLICK:
+        - WAIT_FOR_ID: "field_BookPageID_DOT_Volume"
+        - FIND_BY_ID: "field_BookPageID_DOT_Volume"
+        - ENTER_TEXT: "[PLAT_BOOK]"
+        - FIND_BY_ID: "field_BookPageID_DOT_Page"
+        - ENTER_TEXT: "[PLAT_PAGE]"
+        - FIND_BY_ID: "searchButton"
+        - CLICK:
+        - FIND_BY_CLASS: "selfServiceSearchResultList"
+        - CLICK:
+        - FIND_BY_CLASS: "selfServiceSearchResultNavigation"
+        - CLICK:
+        - RETURN: "WINDOW_URL"
+
   JOHNSTON:
     PROPERTY_APPRAISER:
       TYPE: "PLAYWRIGHT"
@@ -104,6 +150,29 @@ COUNTY_URL_MAPPING:
       LINK_SELECTOR: ""
 
 COUNTY_FIELD_MAPPING:
+  DURHAM:
+    LAND_AREA: "CALCULATED_ACRES"
+    PARCEL_ID: "REID"
+    PARCEL_ID_ALT: "PIN"
+    PARCEL_PK: "PARCEL_PK"
+    OWNER_NAME: "PROPERTY_OWNER"
+    OWNER_MAILING_ADDRESS1: "OWNER_MAIL_1"
+    SALE_DATE: "DEED_DATE"
+    ACRES: "CALCULATED_ACRES"
+    DEED_BOOK: "DEED_BOOK"
+    DEED_PAGE: "DEED_PAGE"
+    DEED_DATE: "DEED_DATE"
+    BDLG_VALUE: "TOTAL_BLDG_VALUE_ASSESSED"
+    LAND_VALUE: "TOTAL_LAND_VALUE_ASSESSED"
+    TOTAL_PROPERTY_VALUE: "TOTAL_PROP_VALUE"
+    LEGAL_DESCRIPTION: "PROPERTY_DESCR"
+    FULL_STREET_NAME: "LOCATION_ADDR"
+    CITY: "CITY"
+    ZIP_CODE: "PHYADDR_ZIP"
+    ZONING: "ZONING"
+    TOWNSHIP: "TOWNSHIP"
+    PLAT_BOOK: "PLAT_BOOK"
+    PLAT_PAGE: "PLAT_PAGE"
   JOHNSTON:
     LAND_AREA: "GISACRES"
     PARCEL_ID: "PARNO"

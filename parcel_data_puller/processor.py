@@ -47,7 +47,8 @@ class ParcelProcessor:
         for key, value in additional_processing_config.items():
             regex = value["REGEX"]
             for result in results:
-                source = result[value["SOURCE"]]  # type: ignore
+
+                source = str(result[value["SOURCE"]])  # type: ignore
                 result[key] = self.get_regex_match(  # type: ignore
                     regex,
                     source,  # type: ignore

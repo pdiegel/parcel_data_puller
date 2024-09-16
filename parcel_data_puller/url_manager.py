@@ -7,6 +7,7 @@ from urllib.parse import urljoin
 import time
 import asyncio
 from .playwright_automator import process_actions
+from .helpers.misc_url_funcs import generate_direct_url
 
 
 class CountyURLManager:
@@ -27,16 +28,14 @@ class CountyURLManager:
         playwright_url_data: Dict[str, Dict[str, str]] = {}
 
         for url_name, url_info in county_url_config.items():
-            url = None
             url_type = url_info.get("TYPE")
+            url = generate_direct_url(url_info["TEMPLATE"], parcel_data)
 
             if url_type == "DIRECT":
-                url = self._generate_direct_url(
-                    url_info["TEMPLATE"], parcel_data
-                )
+                pass
             elif url_type == "SCRAPE":
-                url = self._scrape_url(
-                    url_info["TEMPLATE"],
+                url = self.scrape_url(
+                    url,
                     parcel_data,
                     url_info.get("LINK_SELECTOR"),
                 )
@@ -66,16 +65,10 @@ class CountyURLManager:
                 county_urls[url_name] = result
         return county_urls
 
-    def _generate_direct_url(self, template: str, data: Dict[str, str]) -> str:
-        for key, value in data.items():
-            placeholder = f"[{key}]"
-            template = template.replace(placeholder, str(value))
-        return template
-
-    def _scrape_url(
+    def scrape_url(
         self, template: str, data: Dict[str, str], link_selector: str | None
     ) -> str:
-        url = self._generate_direct_url(template, data)
+        url = generate_direct_url(template, data)
         if not link_selector:
             return ""
         try:

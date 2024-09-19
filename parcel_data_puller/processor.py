@@ -47,8 +47,28 @@ class ParcelProcessor:
         for key, value in additional_processing_config.items():
             regex = value["REGEX"]
             for result in results:
+                source = result[value["SOURCE"]]  # type: ignore
+                result[key] = self.get_regex_match(  # type: ignore
+                    regex,
+                    source,  # type: ignore
+                )
+        return results
 
-                source = str(result[value["SOURCE"]])  # type: ignore
+    def process_post_web_data(
+        self, results: List[Dict[str, str]] | List[None]
+    ) -> List[Dict[str, str]] | List[None]:
+        if len(results) == 0:
+            return results
+
+        post_web_processing_config = (
+            self.data_loader.get_county_post_web_processing_config(
+                self.county_name
+            )
+        )
+        for key, value in post_web_processing_config.items():
+            regex = value["REGEX"]
+            for result in results:
+                source = result[value["SOURCE"]]  # type: ignore
                 result[key] = self.get_regex_match(  # type: ignore
                     regex,
                     source,  # type: ignore

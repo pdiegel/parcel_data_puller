@@ -28,7 +28,8 @@ async def run_automation(
 
     await context.close()
     if isinstance(result, Locator):
-        raise ValueError("Window URL not found")
+        logging.debug(f"Returning empty string for locator: {result}")
+        return ""
     return result
 
 
@@ -52,8 +53,8 @@ async def execute_action(
         elif action == "FIND_BY_TEXT":
             element = page.get_by_text(value).first
         elif action == "FIND_BY_TYPE":
-            # type is a, td, tr, etc.
-            element = page.locator(f"{value}").first
+            # type is a, td, tr, xpath, etc.
+            element = page.locator(value).first
         elif action == "FIND_BY_CLASS":
             element = page.locator(f".{value}").first
         elif action == "ENTER_TEXT":
@@ -74,11 +75,26 @@ async def execute_action(
         elif action == "RETURN" and value == "WINDOW_URL":
             logging.debug(f"Returning window URL: {page.url}")
             return page.url, page
+        elif action == "RETURN":
+            text_content = await element.text_content()  # type: ignore
+            logging.debug(f"Returning value: {text_content}")
+            return text_content, page  # type: ignore
+        elif action == "SELECT_OPTION":
+            if not isinstance(element, Locator):
+                raise ValueError("SELECT_OPTION action requires an element")
+            await element.select_option(value)
+        elif action == "WAIT_FOR":
+            await page.wait_for_load_state("load")
+            await page.wait_for_timeout(500)
+            await page.wait_for_selector(value)
+        elif action == "FIND_ADJACENT":
+            element = element.locator(value)  # type: ignore
+
     except Exception as e:
         logging.error(f"Error executing action '{action}': {str(e)}")
         raise
 
-    return element, page
+    return element, page  # type: ignore
 
 
 def format_parcel_value(value: str, parcel_data: Dict[str, str]) -> str:

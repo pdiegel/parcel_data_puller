@@ -13,6 +13,13 @@ COUNTIES_REQUIRING_ADDITIONAL_PROCESSING:
     DEED_PAGE:
       REGEX: "Deed Book/Page\\s*\\d+/(\\d{3,4})"
       SOURCE: "DEED_SOURCE"
+    # Exmaple of PLAT_SOURCE: 0053 / 0237
+    PLAT_BOOK:
+      REGEX: "(\\d{4})\\s*/\\s*\\d{4}"
+      SOURCE: "PLAT_SOURCE"
+    PLAT_PAGE:
+      REGEX: "\\d{4}\\s*/\\s*(\\d{4})"
+      SOURCE: "PLAT_SOURCE"
   WAKE:
     PLAT_BOOK:
       REGEX: "BM(\\d+)"
@@ -33,10 +40,8 @@ COUNTY_URL_MAPPING:
       TYPE: "PLAYWRIGHT"
       TEMPLATE: "https://rodweb.dconc.gov/web/search/DOCSEARCH5S1"
       ACTIONS:
-        - WAIT_FOR_ID: "submitDisclaimerAccept"
         - FIND_BY_ID: "submitDisclaimerAccept"
         - CLICK:
-        - WAIT_FOR_ID: "field_BookPageID_DOT_Volume"
         - FIND_BY_ID: "field_BookPageID_DOT_Volume"
         - ENTER_TEXT: "[DEED_BOOK]"
         - FIND_BY_ID: "field_BookPageID_DOT_Page"
@@ -48,14 +53,12 @@ COUNTY_URL_MAPPING:
         - FIND_BY_CLASS: "selfServiceSearchResultNavigation"
         - CLICK:
         - RETURN: "WINDOW_URL"
-    PLAT:
+    PLAT_SOURCE:
       TYPE: "PLAYWRIGHT"
       TEMPLATE: "https://rodweb.dconc.gov/web/search/DOCSEARCH5S1"
       ACTIONS:
-        - WAIT_FOR_ID: "submitDisclaimerAccept"
         - FIND_BY_ID: "submitDisclaimerAccept"
         - CLICK:
-        - WAIT_FOR_ID: "field_BookPageID_DOT_Volume"
         - FIND_BY_ID: "field_BookPageID_DOT_Volume"
         - ENTER_TEXT: "[PLAT_BOOK]"
         - FIND_BY_ID: "field_BookPageID_DOT_Page"
@@ -69,14 +72,42 @@ COUNTY_URL_MAPPING:
         - RETURN: "WINDOW_URL"
 
   JOHNSTON:
-    PROPERTY_APPRAISER:
+    TAG:
+      TYPE: "PLAYWRIGHT"
+      TEMPLATE: "https://mapclick6.johnstonnc.com/mapclick/MapClick4/"
+      ACTIONS:
+        - WAIT_FOR: "#button-1005-btnEl"
+        - FIND_BY_ID: "button-1005-btnEl"
+        - CLICK:
+        - FIND_BY_ID: "button-1277-btnEl"
+        - CLICK:
+        - FIND_BY_ID: "tab-1226-btnEl"
+        - CLICK:
+        - FIND_BY_ID: "tab-1226-btnEl"
+        - CLICK:
+        - WAIT_FOR: "#locate-1064"
+        - WAIT_FOR: "#optionscombo-1065-trigger-picker"
+        - FIND_BY_ID: "optionscombo-1065-trigger-picker"
+        - CLICK:
+        - WAIT_FOR: ".x-field-focus"
+        - FIND_BY_TEXT: "NC Pin"
+        - CLICK:
+        - WAIT_FOR: "#textfield-1282-inputEl"
+        - FIND_BY_ID: "textfield-1282-inputEl"
+        - ENTER_TEXT: "[PARCEL_ID]"
+        - WAIT_FOR: "#button-1283-btnInnerEl"
+        - FIND_BY_ID: "button-1283-btnInnerEl"
+        - CLICK:
+        - FIND_BY_TEXT: "Tag"
+        - FIND_ADJACENT: "+ td"
+        - RETURN:
+    DEED:
       TYPE: "PLAYWRIGHT"
       TEMPLATE: "https://erec.johnstonnc.com/recorder/web/login.jsp"
       ACTIONS:
         - FIND_INPUT_BY_TEXT: "Public Login"
         - CLICK:
         - SWITCH_WINDOW:
-        - WAIT_FOR_ID: "BookPageIDBook"
         - FIND_BY_ID: "BookPageIDBook"
         - ENTER_TEXT: "[DEED_BOOK]"
         - FIND_BY_ID: "BookPageIDPage"
@@ -84,11 +115,32 @@ COUNTY_URL_MAPPING:
         - FIND_INPUT_BY_TEXT: "Search"
         - CLICK:
         - SWITCH_WINDOW:
-        - WAIT_FOR_ID: "searchResultsTable"
         - FIND_BY_TEXT: "View Image"
         - CLICK:
         - SWITCH_WINDOW:
         - RETURN: "WINDOW_URL"
+    PLAT_SOURCE:
+      TYPE: "PLAYWRIGHT"
+      TEMPLATE: "https://www.bttaxpayerportal.com/ITSPublicJO/"
+      ACTIONS:
+        - FIND_BY_ID: "searchType"
+        - CLICK:
+        - SELECT_OPTION: "Property Address"
+        - FIND_BY_ID: "FormattedPropertyAddress"
+        - ENTER_TEXT: "[FULL_STREET_NAME]"
+        - FIND_BY_ID: "search-by-property-address"
+        - CLICK:
+        - FIND_BY_ID: "BasicSearch"
+        - WAIT_FOR: "tbody"
+        - FIND_BY_TYPE: "tbody"
+        - WAIT_FOR: "td"
+        - FIND_BY_TYPE: "td"
+        - CLICK:
+        - WAIT_FOR: ".row"
+        - FIND_BY_TEXT: "Plat Book/Page :"
+        - FIND_ADJACENT: "+ div"
+        - RETURN:
+
   WAKE:
     PROPERTY_APPRAISER:
       TYPE: "DIRECT"
@@ -97,14 +149,12 @@ COUNTY_URL_MAPPING:
       TYPE: "PLAYWRIGHT"
       TEMPLATE: "https://rodcrpi.wakegov.com/Booksweb/GenExtSearch.aspx"
       ACTIONS:
-        - WAIT_FOR_ID: "ctl00_ContentPlaceHolder1_RadTextBook"
         - FIND_BY_ID: "ctl00_ContentPlaceHolder1_RadTextBook"
         - ENTER_TEXT: "[DEED_BOOK]"
         - FIND_BY_ID: "ctl00_ContentPlaceHolder1_RadTextPage"
         - ENTER_TEXT: "[DEED_PAGE]"
         - FIND_BY_ID: "ContentPlaceHolder1_btnExtSearch"
         - CLICK:
-        - WAIT_FOR_ID: "ctl00_ContentPlaceHolder1_RadGridResults_ctl00"
         - FIND_BY_ID: "ctl00_ContentPlaceHolder1_RadGridResults_ctl00_ctl04_gbcDocument"
         - CLICK:
         - WAIT_FOR_NEW_WINDOW:
@@ -114,14 +164,12 @@ COUNTY_URL_MAPPING:
       TYPE: "PLAYWRIGHT"
       TEMPLATE: "https://rodcrpi.wakegov.com/Booksweb/GenExtSearch.aspx"
       ACTIONS:
-        - WAIT_FOR_ID: "ctl00_ContentPlaceHolder1_RadTextBook"
         - FIND_BY_ID: "ctl00_ContentPlaceHolder1_RadTextBook"
         - ENTER_TEXT: "BM[PLAT_BOOK]"
         - FIND_BY_ID: "ctl00_ContentPlaceHolder1_RadTextPage"
         - ENTER_TEXT: "[PLAT_PAGE]"
         - FIND_BY_ID: "ContentPlaceHolder1_btnExtSearch"
         - CLICK:
-        - WAIT_FOR_ID: "ctl00_ContentPlaceHolder1_RadGridResults_ctl00"
         - FIND_BY_ID: "ctl00_ContentPlaceHolder1_RadGridResults_ctl00_ctl04_gbcDocument"
         - CLICK:
         - WAIT_FOR_NEW_WINDOW:
@@ -215,7 +263,7 @@ COUNTY_FIELD_MAPPING:
     FULL_STREET_NAME: "FULL_STREET_NAME"
     CITY: "CITY_DECODE"
     PLANNING_JURISDICTION: "PLANNING_JURISDICTION"
-    TOWNSHIP: "TOWNSHIP"
+    TOWNSHIP: "TOWNSHIP_DECODE"
     YEAR_BUILT: "YEAR_BUILT"
     TOTAL_SALE_PRICE: "TOTSALPRICE"
     SALE_DATE: "SALE_DATE"

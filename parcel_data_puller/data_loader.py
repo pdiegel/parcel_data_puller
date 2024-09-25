@@ -1,7 +1,17 @@
 import yaml
 import logging
 from pathlib import Path
-from typing import Dict
+from typing import Dict, List, Union, Optional
+
+StepType = Dict[
+    str, Union[str, Optional[Dict[str, str]], List[Dict[str, Union[str, None]]]]
+]
+OrderType = List[StepType]
+FieldMappingType = Dict[str, str]
+CountyType = Dict[str, Union[str, OrderType, FieldMappingType]]
+
+# Overall type hint for the output
+CountyProcessingOrderType = Dict[str, List[CountyType]]
 
 
 class ParcelDataLoader:
@@ -12,11 +22,7 @@ class ParcelDataLoader:
 
     def load_config(
         self,
-    ) -> (
-        Dict[str, Dict[str, str]]
-        | Dict[str, Dict[str, bool]]
-        | Dict[str, Dict[str, Dict[str, str]]]
-    ):
+    ) -> CountyProcessingOrderType:
         with open(self.config_path, "r") as file:
             yaml_data = yaml.safe_load(file)
             logging.debug(
@@ -24,64 +30,50 @@ class ParcelDataLoader:
             )
             return yaml_data
 
-    def get_county_url(self, county_name: str) -> str:
-        county_url = self.config.get("COUNTY_URLS", {}).get(county_name)
-        if not county_url or not isinstance(county_url, str):
-            logging.info(f"County URL for {county_name} not found.")
-            return ""
+    def get_county_names(self) -> List[str]:
+        county_names: List[str] = []
+        for county in self.config.get("COUNTY_PROCESSING_ORDER", {}):
+            if not isinstance(county, dict):
+                continue
+            logging.debug(f"County: {county.get('COUNTY', '')}")
+            county_name = county.get("COUNTY", "")
+            if not isinstance(county_name, str):
+                continue
+            county_names.append(county_name)
 
-        logging.debug(f"County URL for {county_name}: {county_url}")
-        return county_url
+        return county_names
 
-    def get_field_mappings(self, county_name: str) -> Dict[str, str]:
-        field_mappings = self.config.get("COUNTY_FIELD_MAPPING", {}).get(
-            county_name
-        )
-        if not field_mappings or not isinstance(field_mappings, dict):
-            logging.info(f"Field mappings for {county_name} not found.")
+    def get_config_for(self, county_name: str) -> CountyType:
+        county_configs = self.config.get("COUNTY_PROCESSING_ORDER")
+        if not county_configs:
+            logging.info("No county config found.")
+            return {}
+        for county_config in county_configs:
+            if not isinstance(county_config, dict):  # type: ignore
+                logging.info(f"Invalid county config: {county_config}")
+                continue
+            if county_config.get("COUNTY", "") == county_name:
+                logging.debug(
+                    f"Found config for {county_name}: {county_config}"
+                )
+                return county_config
+
+        return {}
+
+    def get_field_mapping_for(self, county_name: str) -> FieldMappingType:
+        field_mapping = self.get_config_for(county_name).get("FIELD_MAPPING")
+        if not field_mapping or not isinstance(field_mapping, dict):
+            logging.info(f"Field mapping for {county_name} not found.")
             return {}
 
-        logging.debug(f"Field mappings for {county_name}: {field_mappings}")
-        return field_mappings
+        logging.debug(f"Field mapping for {county_name}: {field_mapping}")
+        return field_mapping
 
-    def get_county_url_config(
-        self, county_name: str
-    ) -> Dict[str, Dict[str, str]]:
-        county_config = self.config.get("COUNTY_URL_MAPPING", {}).get(
-            county_name
-        )
-        logging.debug(f"County config for {county_name}: {county_config}")
-        if not county_config or not isinstance(county_config, dict):
-            logging.info(f"County config for {county_name} not found.")
-            return {}
+    def get_step_order_for(self, county_name: str) -> OrderType:
+        step_order = self.get_config_for(county_name).get("ORDER")
+        if not step_order or not isinstance(step_order, list):
+            logging.info(f"Step order for {county_name} not found.")
+            return []
 
-        logging.debug(f"County config for {county_name}: {county_config}")
-        return county_config  # type: ignore
-
-    def get_county_additional_processing_config(
-        self, county_name: str
-    ) -> Dict[str, Dict[str, str]]:
-        county_config = self.config.get(
-            "COUNTIES_REQUIRING_ADDITIONAL_PROCESSING", {}
-        ).get(county_name)
-        logging.debug(f"County config for {county_name}: {county_config}")
-        if not county_config or not isinstance(county_config, dict):
-            logging.info(f"County config for {county_name} not found.")
-            return {}
-
-        logging.debug(f"County config for {county_name}: {county_config}")
-        return county_config  # type: ignore
-
-    def get_county_post_web_processing_config(
-        self, county_name: str
-    ) -> Dict[str, Dict[str, str]]:
-        county_config = self.config.get(
-            "COUNTIES_REQUIRING_POST_WEB_PROCESSING", {}
-        ).get(county_name)
-        logging.debug(f"County config for {county_name}: {county_config}")
-        if not county_config or not isinstance(county_config, dict):
-            logging.info(f"County config for {county_name} not found.")
-            return {}
-
-        logging.debug(f"County config for {county_name}: {county_config}")
-        return county_config  # type: ignore
+        logging.debug(f"Step order for {county_name}: {step_order}")
+        return step_order

@@ -6,7 +6,7 @@ from playwright.async_api import (
     Locator,
 )
 import logging
-from typing import Tuple, Dict, List, Any
+from typing import Tuple, Dict, List
 from .helpers.misc_url_funcs import generate_direct_url
 
 
@@ -106,7 +106,8 @@ def format_parcel_value(value: str, parcel_data: Dict[str, str]) -> str:
 
 
 async def process_actions(
-    url_info: Dict[str, Any],
+    url: str,
+    actions: List[Dict[str, str]],
     parcel_data: Dict[str, str],
 ):
     async with async_playwright() as p:
@@ -114,12 +115,11 @@ async def process_actions(
 
         routines = [
             run_automation(
-                generate_direct_url(url["TEMPLATE"], parcel_data),
-                url["ACTIONS"],
+                generate_direct_url(url, parcel_data),
+                actions,
                 parcel_data,
                 await browser.new_context(),
             )
-            for url in url_info.values()
         ]
         results = await asyncio.gather(*routines)
 
@@ -146,16 +146,10 @@ ctl00_ContentPlaceHolder1_RadGridResults_ctl00_ctl04_gbcDocument"
         {"RETURN": "WINDOW_URL"},
     ]
     parcel_data = {"DEED_BOOK": "014846", "DEED_PAGE": "01590"}
-    url_info = {
-        "DEED": {
-            "TEMPLATE": "https://rodcrpi.wakegov.com/\
-Booksweb/GenExtSearch.aspx",
-            "ACTIONS": actions,
-        }
-    }
+    url = "https://rodcrpi.wakegov.com/Booksweb/GenExtSearch.aspx"
 
     template = "https://rodcrpi.wakegov.com/Booksweb/GenExtSearch.aspx"
 
     logging.basicConfig(level=logging.INFO)
-    results = asyncio.run(process_actions(url_info, parcel_data))
+    results = asyncio.run(process_actions(url, actions, parcel_data))
     logging.info(results)

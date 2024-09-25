@@ -5,6 +5,7 @@ from parcel_data_puller.data_loader import ParcelDataLoader
 from config.constants import YAML_CONFIG_PATH
 from tests.constants import (
     TEST_COUNTY,
+    TEST_COUNTY2,
     INVALID_COUNTY,
     EMPTY_TEST_COUNTY,
     TEST_REGEX,
@@ -20,7 +21,7 @@ def data_loader():
 
 @pytest.fixture
 def parcel_processor(data_loader: ParcelDataLoader):
-    processor = ParcelProcessor(data_loader, TEST_COUNTY)
+    processor = ParcelProcessor(data_loader, TEST_COUNTY2)
     return processor
 
 
@@ -38,50 +39,70 @@ def parcel_processor_empty(data_loader: ParcelDataLoader):
     return processor
 
 
-def test_process(
+def test_process_step(
     parcel_processor: ParcelProcessor,
     parcel_processor_invalid: ParcelProcessor,
-    parcel_processor_empty: ParcelProcessor,
 ):
-    data = parcel_processor.process()
-    assert isinstance(data, list)
-    assert len(data) > 0
-    assert isinstance(data[0], dict)
-    assert "PARCEL_ID" in data[0]
+    parcel_data = {}
+    step_details = parcel_processor.data_loader.get_step_order_for(
+        TEST_COUNTY2
+    )[0]
+    parcel_data = parcel_processor.process_step(
+        step_details,
+        parcel_data,  # type: ignore
+    )
 
-    data = parcel_processor_invalid.process()
-    assert isinstance(data, list)
-    assert len(data) == 0
+    assert isinstance(parcel_data, dict)
+    assert "PARCEL_ID" in parcel_data
 
-    data = parcel_processor_empty.process()
-    assert isinstance(data, list)
-    assert len(data) == 0
+    step_details = parcel_processor_invalid.data_loader.get_step_order_for(
+        INVALID_COUNTY
+    )[0]
+    parcel_data = parcel_processor_invalid.process_step(
+        step_details,
+        parcel_data,  # type: ignore
+    )
+
+    assert isinstance(parcel_data, dict)
+    assert "PARCEL_ID" not in parcel_data
 
 
-def test_process_additional_data(
+def test_scrape_gis_api(
     parcel_processor: ParcelProcessor,
-    parcel_processor_empty: ParcelProcessor,
-    parcel_processor_invalid: ParcelProcessor,
 ):
-    data = parcel_processor.process()
-    data = parcel_processor.process_additional_data(data)
-    assert isinstance(data, list)
-    assert len(data) > 0
-    assert isinstance(data[0], dict)
-    assert "PARCEL_ID" in data[0]
-    assert "OWNER_NAME" in data[0]
-    assert "LEGAL_DESCRIPTION" in data[0]
-    assert "STREET_NAME" in data[0]
+    parcel_data = {}
+    step_details = parcel_processor.data_loader.get_step_order_for(
+        INVALID_COUNTY
+    )[0]
+    parcel_data = parcel_processor.scrape_gis_api(
+        step_details,
+        parcel_data,  # type: ignore
+    )
+    assert isinstance(parcel_data, dict)
+    assert "PARCEL_ID" not in parcel_data
 
-    data = parcel_processor_empty.process()
-    data = parcel_processor_empty.process_additional_data(data)
-    assert isinstance(data, list)
-    assert len(data) == 0
 
-    data = parcel_processor_invalid.process()
-    data = parcel_processor_invalid.process_additional_data(data)
-    assert isinstance(data, list)
-    assert len(data) == 0
+def test_extract_regex(
+    parcel_processor: ParcelProcessor,
+):
+    parcel_data = {}
+    step_details = parcel_processor.data_loader.get_step_order_for(TEST_COUNTY)[
+        2
+    ]
+    parcel_data = parcel_processor.extract_regex(
+        step_details,
+        parcel_data,  # type: ignore
+    )
+    assert isinstance(parcel_data, dict)
+
+    parcel_data = {}
+    for step_details in parcel_processor.data_loader.get_step_order_for(
+        TEST_COUNTY2
+    ):
+        parcel_data = parcel_processor.process_step(step_details, parcel_data)
+
+    assert isinstance(parcel_data, dict)
+    assert "PLAT_BOOK" in parcel_data
 
 
 def test_get_regex_match(parcel_processor: ParcelProcessor):

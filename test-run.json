@@ -1,6 +1,7 @@
 {
     "LAND_AREA": 0.26019959,
     "PARCEL_ID": "0113335",
+    "PARCEL_ID_ALT": "0786943426",
     "OWNER_NAME": "TAPADIA, HERSH ASHOK JOSHI, SUJAN P",
     "OWNER_MAILING_ADDRESS1": "5004 TANGLEWOOD DR",
     "OWNER_MAILING_ADDRESS2": "RALEIGH NC 27612-3135",
@@ -23,7 +24,7 @@
     "FULL_STREET_NAME": "TANGLEWOOD DR",
     "CITY": "RALEIGH",
     "PLANNING_JURISDICTION": "RA",
-    "TOWNSHIP": "07",
+    "TOWNSHIP": "House Creek",
     "YEAR_BUILT": 1980,
     "TOTAL_SALE_PRICE": 234000,
     "SALE_DATE": 1377561600000,
@@ -32,9 +33,10 @@
     "NUM_UNITS": 1,
     "OLD_PARCEL_NUMBER": " 405-00000-0727",
     "ZIP_CODE": "27612",
+    "PROPERTY_APPRAISER": "https://services.wake.gov/realestate/Account.asp?id=0113335",
+    "GIS": "https://maps.raleighnc.gov/imaps/?pin=0786943426",
+    "DEED": "https://rodcrpi.wakegov.com/Booksweb/DocView.aspx?DocID=110983760&RecordDate=06/29/2020",
     "PLAT_BOOK": "1980",
     "PLAT_PAGE": "00159",
-    "PROPERTY_APPRAISER": "https://services.wake.gov/realestate/Account.asp?id=0113335",
-    "DEED": "https://rodcrpi.wakegov.com/Booksweb/DocView.aspx?DocID=110983760&RecordDate=06/29/2020",
     "PLAT": "https://rodcrpi.wakegov.com/Booksweb/DocView.aspx?DocID=846234&RecordDate=03/06/1980"
 }

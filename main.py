@@ -1,6 +1,4 @@
-from parcel_data_puller.aggregator import ParcelDataAggregator
 from parcel_data_puller.processor import ParcelProcessor
-from parcel_data_puller.url_manager import CountyURLManager
 from parcel_data_puller.data_loader import ParcelDataLoader
 from config.constants import YAML_CONFIG_PATH
 import logging
@@ -9,33 +7,21 @@ import json
 
 
 def get_county_data(county: str, parcel_id: str) -> Dict[str, str]:
+    data_loader = ParcelDataLoader(YAML_CONFIG_PATH)
     processor = ParcelProcessor(
-        ParcelDataLoader(YAML_CONFIG_PATH),
+        data_loader,
         county,
+        where_clause=f"PARCEL_ID='{parcel_id}'",
+        num_records=5,
     )
-    aggregator = ParcelDataAggregator(YAML_CONFIG_PATH)
-    api_data = aggregator.aggregate_for_county(
-        county, where_clause=f"PARCEL_ID='{parcel_id}'", num_records=5
-    )
+    parcel_data = {}
+    for i, step_details in enumerate(data_loader.get_step_order_for(county)):
+        logging.debug(f"parcel data before step {i + 1}: {parcel_data}")
+        parcel_data = processor.process_step(step_details, parcel_data)
+        logging.debug(f"parcel data after step {i + 1}: {parcel_data}")
 
-    logging.info(api_data)
-
-    county_url_manager: CountyURLManager = CountyURLManager(
-        aggregator.data_loader
-    )
-    if api_data[0]:
-
-        county_urls = county_url_manager.get_urls_for_county(
-            county, api_data[0]
-        )
-        logging.info(county_urls)
-        for url in county_urls:
-            api_data[0][url] = county_urls[url]  # type: ignore
-
-        logging.info(api_data)
-        processor.process_post_web_data(api_data)
-        logging.info(api_data)
-        return api_data[0]
+    if parcel_data:
+        return parcel_data
     return {}
 
 

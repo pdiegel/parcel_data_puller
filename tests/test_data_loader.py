@@ -2,7 +2,11 @@ import pytest
 from pathlib import Path
 from parcel_data_puller.data_loader import ParcelDataLoader
 from config.constants import YAML_CONFIG_PATH
-from tests.constants import TEST_COUNTY, INVALID_COUNTY
+from tests.constants import (
+    TEST_COUNTY,
+    SOME_COUNTIES,
+    EMPTY_TEST_COUNTY,
+)
 
 
 @pytest.fixture
@@ -11,61 +15,55 @@ def data_loader():
     return ParcelDataLoader(config_path)
 
 
+@pytest.fixture
+def empty_data_loader():
+    config_path = Path("tests/empty.yaml")
+    return ParcelDataLoader(config_path)
+
+
 def test_load_config(data_loader: ParcelDataLoader):
     config = data_loader.load_config()
     assert isinstance(config, dict)
-    assert "COUNTY_URLS" in config
+    assert "COUNTY_PROCESSING_ORDER" in config
 
 
-def test_get_county_url(data_loader: ParcelDataLoader):
-    url = data_loader.get_county_url(TEST_COUNTY)
-    assert (
-        url
-        == "https://services1.arcgis.com/nry3yyvaEfskMEXA/arcgis/rest/\
-services/Wake_County_data/FeatureServer/9/query"
-    )
+def test_get_county_names(data_loader: ParcelDataLoader):
+    county_names = data_loader.get_county_names()
+    for county in SOME_COUNTIES:
+        assert county in county_names
 
-    url = data_loader.get_county_url(INVALID_COUNTY)
-    assert url == ""
+    assert "NULL" not in county_names
 
 
-def test_get_field_mappings(data_loader: ParcelDataLoader):
-    field_mappings = data_loader.get_field_mappings(TEST_COUNTY)
-    assert isinstance(field_mappings, dict)
-    assert "PARCEL_ID" in field_mappings
-    assert "OWNER_NAME" in field_mappings
-
-    field_mappings = data_loader.get_field_mappings(INVALID_COUNTY)
-    assert isinstance(field_mappings, dict)
-    assert len(field_mappings) == 0
-
-
-def test_get_county_url_config(data_loader: ParcelDataLoader):
-    county_config = data_loader.get_county_url_config(TEST_COUNTY)
+def test_get_config_for(data_loader: ParcelDataLoader):
+    county_config = data_loader.get_config_for(TEST_COUNTY)
     assert isinstance(county_config, dict)
-    assert "DEED" in county_config
-    # Accessing the first value in the dictionary and checking if it has the
-    # key "TEMPLATE" in it
-    assert "TEMPLATE" in list(county_config.values())[0]
+    assert "COUNTY" in county_config
+    assert "ORDER" in county_config
+    assert "FIELD_MAPPING" in county_config
 
-    county_config = data_loader.get_county_url_config(INVALID_COUNTY)
-    assert isinstance(county_config, dict)
-    assert len(county_config) == 0
+    county_config = data_loader.get_config_for("NULL")
 
 
-def test_get_county_additional_processing_config(data_loader: ParcelDataLoader):
-    additional_processing_config = (
-        data_loader.get_county_additional_processing_config(TEST_COUNTY)
-    )
-    assert isinstance(additional_processing_config, dict)
-    assert "PLAT_BOOK" in additional_processing_config
-    # Accessing the first value in the dictionary and checking if it has the
-    # key "REGEX" and "SOURCE" in it
-    assert "REGEX" in list(additional_processing_config.values())[0]
-    assert "SOURCE" in list(additional_processing_config.values())[0]
+def test_get_field_mapping_for(
+    data_loader: ParcelDataLoader, empty_data_loader: ParcelDataLoader
+):
+    field_mapping = data_loader.get_field_mapping_for(TEST_COUNTY)
+    assert isinstance(field_mapping, dict)
+    assert "PARCEL_ID" in field_mapping
 
-    additional_processing_config = (
-        data_loader.get_county_additional_processing_config(INVALID_COUNTY)
-    )
-    assert isinstance(additional_processing_config, dict)
-    assert len(additional_processing_config) == 0
+    field_mapping = empty_data_loader.get_field_mapping_for(TEST_COUNTY)
+
+
+def test_get_step_order_for(data_loader: ParcelDataLoader):
+    step_order = data_loader.get_step_order_for(TEST_COUNTY)
+    assert isinstance(step_order, list)
+    assert len(step_order) == 3
+    assert "STEP" in step_order[0]
+    assert "METHOD" in step_order[0]
+    assert "URL" in step_order[0]
+    assert "PARAMETERS" in step_order[0]
+
+    missing_step_order = data_loader.get_step_order_for(EMPTY_TEST_COUNTY)
+    assert isinstance(missing_step_order, list)
+    assert len(missing_step_order) == 0

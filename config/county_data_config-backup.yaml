@@ -1,0 +1,276 @@
+COUNTY_URLS:
+  JOHNSTON: "https://services8.arcgis.com/c7zH8GcUwDgKkh1u/arcgis/rest/services/WB_BoundariesandGen_gdb/FeatureServer/2/query"
+  WAKE: "https://services1.arcgis.com/nry3yyvaEfskMEXA/arcgis/rest/services/Wake_County_data/FeatureServer/9/query"
+  DURHAM: "https://services2.arcgis.com/G5vR3cOjh6g2Ed8E/arcgis/rest/services/Parcels_NEW/FeatureServer/0/query"
+  TEST: "https://localhost"
+
+COUNTIES_REQUIRING_ADDITIONAL_PROCESSING:
+  JOHNSTON:
+    DEED_BOOK:
+      # Example formatting of DEED_SOURCE: Deed Book/Page 05377/0368
+      REGEX: "Deed Book/Page\\s*(\\d+)/(\\d+)"
+      SOURCE: "DEED_SOURCE"
+    DEED_PAGE:
+      REGEX: "Deed Book/Page\\s*\\d+/(\\d{3,4})"
+      SOURCE: "DEED_SOURCE"
+    # Exmaple of PLAT_SOURCE: 0053 / 0237
+    PLAT_BOOK:
+      REGEX: "(\\d{4})\\s*/\\s*\\d{4}"
+      SOURCE: "PLAT_SOURCE"
+    PLAT_PAGE:
+      REGEX: "\\d{4}\\s*/\\s*(\\d{4})"
+      SOURCE: "PLAT_SOURCE"
+  WAKE:
+    PLAT_BOOK:
+      REGEX: "BM(\\d+)"
+      SOURCE: "LEGAL_DESCRIPTION"
+    PLAT_PAGE:
+      REGEX: "-\\s*(\\d+)"
+      SOURCE: "LEGAL_DESCRIPTION"
+
+COUNTY_URL_MAPPING:
+  DURHAM:
+    PROPERTY_APPRAISER:
+      TYPE: "DIRECT"
+      TEMPLATE: "https://taxcama.dconc.gov/camapwa/PropertySummary.aspx?PARCELPK=[PARCEL_PK]"
+    GIS:
+      TYPE: "DIRECT"
+      TEMPLATE: "https://maps.durhamnc.gov/?pid=[PARCEL_ID]"
+    DEED:
+      TYPE: "PLAYWRIGHT"
+      TEMPLATE: "https://rodweb.dconc.gov/web/search/DOCSEARCH5S1"
+      ACTIONS:
+        - FIND_BY_ID: "submitDisclaimerAccept"
+        - CLICK:
+        - FIND_BY_ID: "field_BookPageID_DOT_Volume"
+        - ENTER_TEXT: "[DEED_BOOK]"
+        - FIND_BY_ID: "field_BookPageID_DOT_Page"
+        - ENTER_TEXT: "[DEED_PAGE]"
+        - FIND_BY_ID: "searchButton"
+        - CLICK:
+        - FIND_BY_CLASS: "selfServiceSearchResultList"
+        - CLICK:
+        - FIND_BY_CLASS: "selfServiceSearchResultNavigation"
+        - CLICK:
+        - RETURN: "WINDOW_URL"
+    PLAT_SOURCE:
+      TYPE: "PLAYWRIGHT"
+      TEMPLATE: "https://rodweb.dconc.gov/web/search/DOCSEARCH5S1"
+      ACTIONS:
+        - FIND_BY_ID: "submitDisclaimerAccept"
+        - CLICK:
+        - FIND_BY_ID: "field_BookPageID_DOT_Volume"
+        - ENTER_TEXT: "[PLAT_BOOK]"
+        - FIND_BY_ID: "field_BookPageID_DOT_Page"
+        - ENTER_TEXT: "[PLAT_PAGE]"
+        - FIND_BY_ID: "searchButton"
+        - CLICK:
+        - FIND_BY_CLASS: "selfServiceSearchResultList"
+        - CLICK:
+        - FIND_BY_CLASS: "selfServiceSearchResultNavigation"
+        - CLICK:
+        - RETURN: "WINDOW_URL"
+
+  JOHNSTON:
+    TAG:
+      TYPE: "PLAYWRIGHT"
+      TEMPLATE: "https://mapclick6.johnstonnc.com/mapclick/MapClick4/"
+      ACTIONS:
+        - WAIT_FOR: "#button-1005-btnEl"
+        - FIND_BY_ID: "button-1005-btnEl"
+        - CLICK:
+        - FIND_BY_ID: "button-1277-btnEl"
+        - CLICK:
+        - FIND_BY_ID: "tab-1226-btnEl"
+        - CLICK:
+        - FIND_BY_ID: "tab-1226-btnEl"
+        - CLICK:
+        - WAIT_FOR: "#locate-1064"
+        - WAIT_FOR: "#optionscombo-1065-trigger-picker"
+        - FIND_BY_ID: "optionscombo-1065-trigger-picker"
+        - CLICK:
+        - WAIT_FOR: ".x-field-focus"
+        - FIND_BY_TEXT: "NC Pin"
+        - CLICK:
+        - WAIT_FOR: "#textfield-1282-inputEl"
+        - FIND_BY_ID: "textfield-1282-inputEl"
+        - ENTER_TEXT: "[PARCEL_ID]"
+        - WAIT_FOR: "#button-1283-btnInnerEl"
+        - FIND_BY_ID: "button-1283-btnInnerEl"
+        - CLICK:
+        - FIND_BY_TEXT: "Tag"
+        - FIND_ADJACENT: "+ td"
+        - RETURN:
+    DEED:
+      TYPE: "PLAYWRIGHT"
+      TEMPLATE: "https://erec.johnstonnc.com/recorder/web/login.jsp"
+      ACTIONS:
+        - FIND_INPUT_BY_TEXT: "Public Login"
+        - CLICK:
+        - SWITCH_WINDOW:
+        - FIND_BY_ID: "BookPageIDBook"
+        - ENTER_TEXT: "[DEED_BOOK]"
+        - FIND_BY_ID: "BookPageIDPage"
+        - ENTER_TEXT: "[DEED_PAGE]"
+        - FIND_INPUT_BY_TEXT: "Search"
+        - CLICK:
+        - SWITCH_WINDOW:
+        - FIND_BY_TEXT: "View Image"
+        - CLICK:
+        - SWITCH_WINDOW:
+        - RETURN: "WINDOW_URL"
+    PLAT_SOURCE:
+      TYPE: "PLAYWRIGHT"
+      TEMPLATE: "https://www.bttaxpayerportal.com/ITSPublicJO/"
+      ACTIONS:
+        - FIND_BY_ID: "searchType"
+        - CLICK:
+        - SELECT_OPTION: "Property Address"
+        - FIND_BY_ID: "FormattedPropertyAddress"
+        - ENTER_TEXT: "[FULL_STREET_NAME]"
+        - FIND_BY_ID: "search-by-property-address"
+        - CLICK:
+        - FIND_BY_ID: "BasicSearch"
+        - WAIT_FOR: "tbody"
+        - FIND_BY_TYPE: "tbody"
+        - WAIT_FOR: "td"
+        - FIND_BY_TYPE: "td"
+        - CLICK:
+        - WAIT_FOR: ".row"
+        - FIND_BY_TEXT: "Plat Book/Page :"
+        - FIND_ADJACENT: "+ div"
+        - RETURN:
+
+  WAKE:
+    PROPERTY_APPRAISER:
+      TYPE: "DIRECT"
+      TEMPLATE: "https://services.wake.gov/realestate/Account.asp?id=[PARCEL_ID]"
+    DEED:
+      TYPE: "PLAYWRIGHT"
+      TEMPLATE: "https://rodcrpi.wakegov.com/Booksweb/GenExtSearch.aspx"
+      ACTIONS:
+        - FIND_BY_ID: "ctl00_ContentPlaceHolder1_RadTextBook"
+        - ENTER_TEXT: "[DEED_BOOK]"
+        - FIND_BY_ID: "ctl00_ContentPlaceHolder1_RadTextPage"
+        - ENTER_TEXT: "[DEED_PAGE]"
+        - FIND_BY_ID: "ContentPlaceHolder1_btnExtSearch"
+        - CLICK:
+        - FIND_BY_ID: "ctl00_ContentPlaceHolder1_RadGridResults_ctl00_ctl04_gbcDocument"
+        - CLICK:
+        - WAIT_FOR_NEW_WINDOW:
+        - SWITCH_WINDOW:
+        - RETURN: "WINDOW_URL"
+    PLAT:
+      TYPE: "PLAYWRIGHT"
+      TEMPLATE: "https://rodcrpi.wakegov.com/Booksweb/GenExtSearch.aspx"
+      ACTIONS:
+        - FIND_BY_ID: "ctl00_ContentPlaceHolder1_RadTextBook"
+        - ENTER_TEXT: "BM[PLAT_BOOK]"
+        - FIND_BY_ID: "ctl00_ContentPlaceHolder1_RadTextPage"
+        - ENTER_TEXT: "[PLAT_PAGE]"
+        - FIND_BY_ID: "ContentPlaceHolder1_btnExtSearch"
+        - CLICK:
+        - FIND_BY_ID: "ctl00_ContentPlaceHolder1_RadGridResults_ctl00_ctl04_gbcDocument"
+        - CLICK:
+        - WAIT_FOR_NEW_WINDOW:
+        - SWITCH_WINDOW:
+        - RETURN: "WINDOW_URL"
+  TEST:
+    TEST_APPRAISER:
+      TYPE: "SCRAPE"
+      TEMPLATE: "https://www.bttaxpayerportal.com/itspublicjo"
+      LINK_SELECTOR: "a"
+    TEST_APPRAISER_INVALID:
+      TYPE: "SCRAPE"
+      TEMPLATE: "https://www.bttaxpayerportal.com/itspublicjo"
+      LINK_SELECTOR: "#testtest"
+    TEST_APPRAISER_INVALID_SELECTOR:
+      TYPE: "SCRAPE"
+      TEMPLATE: "https://www.bttaxpayerportal.com/itspublicjo"
+      LINK_SELECTOR: ""
+    TEST_APPRAISER_INVALID_URL:
+      TYPE: "SCRAPE"
+      TEMPLATE: "https://www.bttaxpayrtal.com/itspublicjo"
+      LINK_SELECTOR: "#testtest"
+    TEST_INVALID_TYPE:
+      TYPE: "INVALID"
+      TEMPLATE: "https://www.bttaxpayerportal.com/itspublicjo"
+      LINK_SELECTOR: ""
+
+COUNTY_FIELD_MAPPING:
+  DURHAM:
+    LAND_AREA: "CALCULATED_ACRES"
+    PARCEL_ID: "REID"
+    PARCEL_ID_ALT: "PIN"
+    PARCEL_PK: "PARCEL_PK"
+    OWNER_NAME: "PROPERTY_OWNER"
+    OWNER_MAILING_ADDRESS1: "OWNER_MAIL_1"
+    SALE_DATE: "DEED_DATE"
+    ACRES: "CALCULATED_ACRES"
+    DEED_BOOK: "DEED_BOOK"
+    DEED_PAGE: "DEED_PAGE"
+    DEED_DATE: "DEED_DATE"
+    BDLG_VALUE: "TOTAL_BLDG_VALUE_ASSESSED"
+    LAND_VALUE: "TOTAL_LAND_VALUE_ASSESSED"
+    TOTAL_PROPERTY_VALUE: "TOTAL_PROP_VALUE"
+    LEGAL_DESCRIPTION: "PROPERTY_DESCR"
+    FULL_STREET_NAME: "LOCATION_ADDR"
+    CITY: "CITY"
+    ZIP_CODE: "PHYADDR_ZIP"
+    ZONING: "ZONING"
+    TOWNSHIP: "TOWNSHIP"
+    PLAT_BOOK: "PLAT_BOOK"
+    PLAT_PAGE: "PLAT_PAGE"
+  JOHNSTON:
+    LAND_AREA: "GISACRES"
+    PARCEL_ID: "PARNO"
+    OWNER_NAME: "OWNNAME"
+    OWNER_NAME2: "OWNNAME2"
+    OWNER_MAILING_ADDRESS1: "MAILADD"
+    DEED_SOURCE: "SOURCEREF"
+    SALE_DATE: "SALEDATE"
+    ACRES: "GISACRES"
+    BLDG_VALUE: "IMPROVVAL"
+    LAND_VALUE: "LANDVAL"
+    TOTAL_PROPERTY_VALUE: "PARVAL"
+    LEGAL_DESCRIPTION: "LEGDECFULL"
+    FULL_STREET_NAME: "SITEADD"
+    CITY: "SCITY"
+    SUBDIVISION: "SUBDIVISIO"
+    ZIP_CODE: "SZIP"
+  WAKE:
+    LAND_AREA: "CALC_AREA"
+    PARCEL_ID: "REID"
+    OWNER_NAME: "OWNER"
+    OWNER_MAILING_ADDRESS1: "ADDR1"
+    OWNER_MAILING_ADDRESS2: "ADDR2"
+    OWNER_MAILING_ADDRESS3: "ADDR3"
+    DEED_BOOK: "DEED_BOOK"
+    DEED_PAGE: "DEED_PAGE"
+    DEED_DATE: "DEED_DATE"
+    ACRES: "DEED_ACRES"
+    BLDG_VALUE: "BLDG_VAL"
+    LAND_VALUE: "LAND_VAL"
+    TOTAL_PROPERTY_VALUE: "TOTAL_VALUE_ASSD"
+    LEGAL_DESCRIPTION: "PROPDESC"
+    STREET_NAME: "STNAME"
+    STREET_TYPE: "STYPE"
+    STREET_PREFIX: "STPRE"
+    STREET_SUFFIX: "STSUF"
+    STREET_NUMBER: "STNUM"
+    STREET_MISC: "STMISC"
+    SITUS_ADDRESS: "SITE_ADDRESS"
+    FULL_STREET_NAME: "FULL_STREET_NAME"
+    CITY: "CITY_DECODE"
+    PLANNING_JURISDICTION: "PLANNING_JURISDICTION"
+    TOWNSHIP: "TOWNSHIP_DECODE"
+    YEAR_BUILT: "YEAR_BUILT"
+    TOTAL_SALE_PRICE: "TOTSALPRICE"
+    SALE_DATE: "SALE_DATE"
+    PROPERTY_CLASSIFICATION: "LAND_CLASS_DECODE"
+    NUM_STRUCTURES: "TOTSTRUCTS"
+    NUM_UNITS: "TOTUNITS"
+    OLD_PARCEL_NUMBER: "OLD_PARCEL_NUMBER"
+    ZIP_CODE: "ZIPNUM"
+  TEST:
+    PARCEL_ID: "REID"

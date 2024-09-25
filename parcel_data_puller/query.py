@@ -1,6 +1,6 @@
 import requests
 import logging
-from typing import Dict, List
+from typing import Dict
 
 
 class ParcelQuery:
@@ -12,30 +12,30 @@ class ParcelQuery:
         self,
         where_clause: str = "1=1",
         num_records: int = 50,
-    ) -> List[None] | List[Dict[str, str]]:
-        params = {
+    ) -> Dict[str, str]:
+        params = {  # type: ignore
             "where": self.format_where_clause(where_clause),
             "outFields": ",".join(self.field_map.values()),
             "f": "geojson",
             "resultRecordCount": num_records,
         }
-        all_results: List[None] | List[Dict[str, str]] = []
+        results: Dict[str, str] = {}
 
         logging.debug(f"Querying {self.url} with params: {params}")
         try:
-            response = requests.get(self.url, params=params)
+            response = requests.get(self.url, params=params)  # type: ignore
         except requests.exceptions.HTTPError as http_err:
             logging.error(f"HTTP error occurred: {http_err}")
-            return []
+            return {}
         except requests.exceptions.ConnectionError as conn_err:
             logging.error(f"Connection error occurred: {conn_err}")
-            return []
+            return {}
         except requests.exceptions.Timeout as timeout_err:
             logging.error(f"Timeout error occurred: {timeout_err}")
-            return []
+            return {}
         except requests.exceptions.RequestException as req_err:
             logging.error(f"An error occurred: {req_err}")
-            return []
+            return {}
 
         if response.status_code == 200:
             data = response.json()
@@ -43,12 +43,13 @@ class ParcelQuery:
             logging.debug(f"Received {len(features)} features")
 
             for feature in features:
-                all_results.append(self.process_feature(feature))
+                processed_feature = self.process_feature(feature)
+                results.update(processed_feature)
         else:
             logging.error(f"Received status code {response.status_code}")
-            return []
+            return {}
 
-        return all_results
+        return results
 
     def process_feature(
         self, feature: Dict[str, Dict[str, str]]

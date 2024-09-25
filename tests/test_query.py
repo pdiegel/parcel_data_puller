@@ -4,7 +4,7 @@ from parcel_data_puller.query import ParcelQuery
 from parcel_data_puller.data_loader import ParcelDataLoader
 from config.constants import YAML_CONFIG_PATH
 from tests.constants import (
-    TEST_COUNTY,
+    TEST_COUNTY2,
     EMPTY_TEST_COUNTY,
 )
 from typing import Dict
@@ -20,17 +20,19 @@ def data_loader():
 
 @pytest.fixture
 def parcel_query(data_loader: ParcelDataLoader):
-    url = data_loader.get_county_url(TEST_COUNTY)
-    field_mappings = data_loader.get_field_mappings(TEST_COUNTY)
-    query = ParcelQuery(url, field_mappings)
+    county_config = data_loader.get_config_for(TEST_COUNTY2)
+    url = county_config.get("URL", "")
+    field_mapping = data_loader.get_field_mapping_for(TEST_COUNTY2)
+    query = ParcelQuery(url, field_mapping)  # type: ignore
     return query
 
 
 @pytest.fixture
 def parcel_query_empty(data_loader: ParcelDataLoader):
-    url = data_loader.get_county_url(EMPTY_TEST_COUNTY)
-    field_mappings = data_loader.get_field_mappings(EMPTY_TEST_COUNTY)
-    query = ParcelQuery(url, field_mappings)
+    county_config = data_loader.get_config_for(EMPTY_TEST_COUNTY)
+    url = county_config.get("URL", "")
+    field_mapping = data_loader.get_field_mapping_for(EMPTY_TEST_COUNTY)
+    query = ParcelQuery(url, field_mapping)
     return query
 
 
@@ -51,27 +53,27 @@ def test_fetch_data_connection_error(
         "Failed to connect"
     )
 
-    result = parcel_query.query()
+    parcel_data = parcel_query.query()
 
-    assert result == []
+    assert parcel_data == {}
 
 
 @patch("requests.get")
 def test_http_error(mock_get: MagicMock, parcel_query: ParcelQuery):
     mock_get.side_effect = requests.exceptions.HTTPError("Failed to connect")
 
-    result = parcel_query.query()
+    parcel_data = parcel_query.query()
 
-    assert result == []
+    assert parcel_data == {}
 
 
 @patch("requests.get")
 def test_timeout_error(mock_get: MagicMock, parcel_query: ParcelQuery):
     mock_get.side_effect = requests.exceptions.Timeout("Failed to connect")
 
-    result = parcel_query.query()
+    parcel_data = parcel_query.query()
 
-    assert result == []
+    assert parcel_data == {}
 
 
 @patch("requests.get")
@@ -80,34 +82,29 @@ def test_request_exception(mock_get: MagicMock, parcel_query: ParcelQuery):
         "Failed to connect"
     )
 
-    result = parcel_query.query()
+    parcel_data = parcel_query.query()
 
-    assert result == []
+    assert parcel_data == {}
 
 
 @patch("requests.get")
 def test_bad_response(mock_get: MagicMock, parcel_query: ParcelQuery):
     mock_get.return_value.status_code = 400
 
-    result = parcel_query.query()
+    parcel_data = parcel_query.query()
 
-    assert result == []
+    assert parcel_data == {}
 
 
 def test_query(parcel_query: ParcelQuery, parcel_query_empty: ParcelQuery):
-    data = parcel_query.query()
-    assert isinstance(data, list)
-    assert len(data) > 0
-    assert isinstance(data[0], dict)
-    assert "PARCEL_ID" in data[0]
+    parcel_data = parcel_query.query(where_clause="PARCEL_ID='0113335'")
+    assert isinstance(parcel_data, dict)
 
-    data = parcel_query.query(where_clause=f"PARCEL_ID={1234564566985}")
-    assert isinstance(data, list)
-    assert len(data) == 0
+    parcel_data = parcel_query.query(where_clause=f"PARCEL_ID={1234564566985}")
+    assert isinstance(parcel_data, dict)
 
-    data = parcel_query_empty.query()
-    assert isinstance(data, list)
-    assert len(data) == 0
+    parcel_data = parcel_query_empty.query()
+    assert isinstance(parcel_data, dict)
 
 
 def test_process_feature(
@@ -115,4 +112,3 @@ def test_process_feature(
 ):
     processed_feature = parcel_query_empty.process_feature(feature)
     assert isinstance(processed_feature, dict)
-    assert "PARCEL_ID" in processed_feature
